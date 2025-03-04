@@ -102,7 +102,7 @@ class ChatFragment : Fragment() {
                     val layoutManager = binding.recyclerView.layoutManager as? LinearLayoutManager
                     if (!isUserScrolling && layoutManager != null) {
                         val lastUnreadMessageIndex = messageList.indexOfLast { !it.isRead }
-                        binding.recyclerView.smoothScrollToPosition(
+                        binding.recyclerView.scrollToPosition(
                             if (lastUnreadMessageIndex != -1) lastUnreadMessageIndex else messageList.size - 1
                         )
                     }
