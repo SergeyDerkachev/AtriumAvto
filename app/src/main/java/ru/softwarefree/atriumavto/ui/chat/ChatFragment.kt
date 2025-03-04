@@ -100,11 +100,13 @@ class ChatFragment : Fragment() {
             messageAdapter.submitList(messageList) {
                 binding.recyclerView.post {
                     val layoutManager = binding.recyclerView.layoutManager as? LinearLayoutManager
-                    if (!isUserScrolling && layoutManager != null) {
-                        val lastUnreadMessageIndex = messageList.indexOfLast { !it.isRead }
-                        binding.recyclerView.scrollToPosition(
-                            if (lastUnreadMessageIndex != -1) lastUnreadMessageIndex else messageList.size - 1
-                        )
+                    if (layoutManager != null) {
+                        if (!isUserScrolling) {
+                            val lastUnreadMessageIndex = messageList.indexOfLast { !it.isRead }
+                            binding.recyclerView.scrollToPosition(
+                                if (lastUnreadMessageIndex != -1) lastUnreadMessageIndex else messageList.size - 1
+                            )
+                        }
                     }
                     chatViewModel.markMessagesAsRead()
                 }
