@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/carBrand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Car Brand"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/numberOfCylinders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number Of Cylinders"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/power"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Power"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/engineCapacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Engine Capacity"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/transmission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Transmission"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/fuelConsumptionRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel Consumption Rate"
+        android:textSize="14sp"
+        android:layout_gravity="start"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:id="@+id/pointOfOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Point Of Order"
+        android:textSize="14sp"
+        android:layout_gravity="start"/>
+
+</LinearLayout>

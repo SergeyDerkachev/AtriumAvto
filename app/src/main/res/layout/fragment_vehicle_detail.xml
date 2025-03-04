@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/vehicleOrganization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Organization" />
+
+    <TextView
+        android:id="@+id/vehicleNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number" />
+
+    <TextView
+        android:id="@+id/vehicleBrand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brand" />
+
+    <TextView
+        android:id="@+id/vehicleDriver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Driver" />
+
+    <TextView
+        android:id="@+id/vehicleVin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VIN" />
+
+    <TextView
+        android:id="@+id/vehicleYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Year" />
+
+    <TextView
+        android:id="@+id/vehicleMileage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mileage" />
+
+    <TextView
+        android:id="@+id/vehicleInsurance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Insurance" />
+
+</LinearLayout>

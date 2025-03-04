@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_chat">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="ru.softwarefree.atriumavto.ui.home.HomeFragment"
+        android:label="@string/nav_home"
+        tools:layout="@layout/fragment_home" />
+        <action
+            android:id="@+id/action_nav_home_to_vehicleDetailFragment"
+            app:destination="@id/vehicleDetailFragment" />
+
+    <fragment
+        android:id="@+id/vehicleDetailFragment"
+        android:name="ru.softwarefree.atriumavto.ui.home.VehicleDetailFragment"
+        android:label="@string/nav_vehicleetail"
+        tools:layout="@layout/fragment_vehicle_detail" />
+
+    <fragment
+        android:id="@+id/nav_consumption"
+        android:name="ru.softwarefree.atriumavto.ui.consumption.ConsumptionFragment"
+        android:label="@string/nav_consumption"
+        tools:layout="@layout/fragment_home" />
+    <action
+        android:id="@+id/action_nav_consumption_to_consumptionDetailFragment"
+        app:destination="@id/consumptionDetailFragment" />
+
+    <fragment
+        android:id="@+id/consumptionDetailFragment"
+        android:name="ru.softwarefree.atriumavto.ui.consumption.ConsumptionDetailFragment"
+        android:label="@string/nav_vehicleetail"
+        tools:layout="@layout/fragment_consumption_detail" />
+
+    <fragment
+        android:id="@+id/nav_chat"
+        android:name="ru.softwarefree.atriumavto.ui.chat.ChatFragment"
+        android:label="@string/nav_chat"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
+        android:id="@+id/setupProfileFragment"
+        android:name="ru.softwarefree.atriumavto.ui.chat.SetupProfileFragment"
+        android:label="Установка имени пользователя"
+        tools:layout="@layout/fragment_setup_profile" />
+        <action
+            android:id="@+id/action_setupProfileFragment_to_nav_chat"
+            app:destination="@id/nav_chat" />
+
+</navigation>

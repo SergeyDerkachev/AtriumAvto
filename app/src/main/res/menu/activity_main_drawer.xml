@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_atrium"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_atrium" />
+        <item
+            android:id="@+id/nav_bte"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_bte" />
+        <item
+            android:id="@+id/nav_teplovik"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_teplovik" />
+        <item
+            android:id="@+id/nav_kaldera"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_kaldera" />
+        <item
+            android:id="@+id/nav_bef"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_bef" />
+        <item
+            android:id="@+id/nav_neo"
+            android:icon="@android:drawable/ic_media_play"
+            android:title="@string/menu_neo" />
+    </group>
+</menu>

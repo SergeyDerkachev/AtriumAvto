@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053388987860",
+    "project_id": "atriumavto-a10fe",
+    "storage_bucket": "atriumavto-a10fe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053388987860:android:a3de69afa32c2bbd328a41",
+        "android_client_info": {
+          "package_name": "ru.softwarefree.atriumavto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh37RQjGu7-hZlPnHS2dcKEmSlZpSy24Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">AtriumAvto</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Транспортная Служба</string>
+    <string name="nav_header_subtitle">dsv@atriumnn.ru</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Автопарк Атриум</string>
+    <string name="menu_atrium">Атриум Сервис</string>
+    <string name="menu_bte">Бор Теплоэнерго</string>
+    <string name="menu_teplovik">Тепловик</string>
+    <string name="menu_kaldera">Кальдера</string>
+    <string name="menu_bef">БЭФ</string>
+    <string name="menu_neo">НЭО</string>
+
+    <string name="nav_home">Автопарк Атриум</string>
+    <string name="nav_vehicleetail">Подробная информация</string>
+    <string name="nav_consumption">Расход топлива</string>
+    <string name="nav_chat">Чат Транспортной службы</string>
+
+    <string name="msg">Ваше сообщение</string>
+    <string name="send">Отправить</string>
+    <string name="message">Сообщение</string>
+    <string name="image_description">Фото</string>
+</resources>
