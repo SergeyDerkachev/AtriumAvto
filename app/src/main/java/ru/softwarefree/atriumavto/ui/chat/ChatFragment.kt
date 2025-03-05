@@ -22,9 +22,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.launch
 import ru.softwarefree.atriumavto.R
 import ru.softwarefree.atriumavto.databinding.FragmentChatBinding
 import java.io.File
@@ -39,6 +41,7 @@ class ChatFragment : Fragment() {
     private lateinit var cameraResultLauncher: ActivityResultLauncher<Intent>
     private var mediaPlayer: MediaPlayer? = null
     private var isUserScrolling = false
+    private var isFirstLoad = true
 
     private val messageAdapter by lazy {
         MessageAdapter { imageBitmap ->
@@ -62,8 +65,9 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedPreferences = requireContext().getSharedPreferences("user_prefs", 0)
-        sharedPreferences.getString("displayName", null) ?: findNavController().navigate(R.id.setupProfileFragment)
+        sharedPreferences = requireContext().getSharedPreferences("user_prefs", 0).apply {
+            getString("displayName", null) ?: findNavController().navigate(R.id.setupProfileFragment)
+        }
 
         setupViews()
         setupObservers()
@@ -79,7 +83,7 @@ class ChatFragment : Fragment() {
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    isUserScrolling = dy < 0
+                    if (dy < 0) isUserScrolling = true
                 }
             })
         }
@@ -88,29 +92,44 @@ class ChatFragment : Fragment() {
             messageEditText.text.toString().takeIf { it.isNotEmpty() }?.let {
                 chatViewModel.sendMessage(it)
                 messageEditText.text.clear()
+                scrollToBottom()
             }
         }
 
-        cameraButton.setOnClickListener { checkCameraPermissionAndLaunch() }
+        cameraButton.setOnClickListener {
+            checkCameraPermissionAndLaunch()
+            scrollToBottom()
+        }
     }
 
     private fun setupObservers() {
         chatViewModel.messages.observe(viewLifecycleOwner) { messages ->
             val messageList = messages ?: return@observe
+
+            val lastMessage = messageList.lastOrNull()
+            val isMessageFromCurrentUser = lastMessage?.senderId == chatViewModel.getCurrentUserId()
+
+            if (lastMessage != null && !isMessageFromCurrentUser) {
+                playNotificationSound()
+            }
+
             messageAdapter.submitList(messageList) {
-                binding.recyclerView.post {
+                viewLifecycleOwner.lifecycleScope.launch {
                     val layoutManager = binding.recyclerView.layoutManager as? LinearLayoutManager
-                    if (layoutManager != null) {
-                        if (!isUserScrolling) {
-                            val lastUnreadMessageIndex = messageList.indexOfLast { !it.isRead }
-                            binding.recyclerView.scrollToPosition(
-                                if (lastUnreadMessageIndex != -1) lastUnreadMessageIndex else messageList.size - 1
-                            )
-                        }
+                    val shouldScrollToEnd = !isUserScrolling && (isMessageFromCurrentUser || isFirstLoad)
+
+                    if (layoutManager != null && shouldScrollToEnd) {
+                        binding.recyclerView.scrollToPosition(messageList.size - 1)
                     }
                     chatViewModel.markMessagesAsRead()
                 }
             }
+        }
+    }
+
+    private fun scrollToBottom() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.recyclerView.scrollToPosition(messageAdapter.itemCount - 1)
         }
     }
 
@@ -131,11 +150,16 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private val requestCameraPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) launchCamera()
+            else Toast.makeText(requireContext(), "Camera permission is required to take photos", Toast.LENGTH_SHORT).show()
+        }
+
     private fun checkCameraPermissionAndLaunch() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            launchCamera()
-        } else {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> launchCamera()
+            else -> requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -150,7 +174,10 @@ class ChatFragment : Fragment() {
 
     private fun playNotificationSound() {
         mediaPlayer?.release()
-        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.zvonok).apply { start() }
+        mediaPlayer = MediaPlayer.create(requireContext(), R.raw.zvonok).apply {
+            setOnCompletionListener { release() }
+            start()
+        }
     }
 
     @Deprecated("Deprecated in Java")

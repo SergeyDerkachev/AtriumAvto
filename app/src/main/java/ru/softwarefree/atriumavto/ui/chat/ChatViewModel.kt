@@ -96,4 +96,8 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         }
         _messages.value = updatedMessages
     }
+
+    fun getCurrentUserId(): String {
+        return FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    }
 }
