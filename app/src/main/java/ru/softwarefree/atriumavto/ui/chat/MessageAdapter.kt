@@ -1,5 +1,6 @@
 package ru.softwarefree.atriumavto.ui.chat
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,50 +12,85 @@ import com.bumptech.glide.Glide
 import ru.softwarefree.atriumavto.R
 
 class MessageAdapter(
-    private val onImageClick: (bitmap: android.graphics.Bitmap) -> Unit
+    private val currentUserId: String,
+    private val onImageClick: (Bitmap) -> Unit,
+    private val onLikeClick: (messageId: String) -> Unit
 ) : ListAdapter<Message, MessageAdapter.MessageViewHolder>(MessageDiffCallback()) {
 
-    init {
-        stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
+    companion object {
+        private const val VIEW_TYPE_SELF = 1
+        private const val VIEW_TYPE_OTHER = 2
     }
 
-    class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val senderNameTextView: TextView = view.findViewById(R.id.senderNameTextView)
-        val messageTextView: TextView = view.findViewById(R.id.messageTextView)
-        val messageImageView: ImageView = view.findViewById(R.id.messageImageView)
+    override fun getItemViewType(position: Int): Int =
+        if (getItem(position).senderId == currentUserId) VIEW_TYPE_SELF else VIEW_TYPE_OTHER
+
+    override fun getItemId(position: Int): Long = getItem(position).id.hashCode().toLong()
+
+    init {
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_message, parent, false)
+        val layout = if (viewType == VIEW_TYPE_SELF) R.layout.item_message_self else R.layout.item_message
+        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return MessageViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        val message = getItem(position)
+        holder.bind(getItem(position), onImageClick, onLikeClick)
+    }
 
-        holder.senderNameTextView.text = message.senderName
+    class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val senderNameTextView: TextView = view.findViewById(R.id.senderNameTextView)
+        private val messageTextView: TextView = view.findViewById(R.id.messageTextView)
+        private val messageImageView: ImageView = view.findViewById(R.id.messageImageView)
+        private val likeIcon: ImageView = view.findViewById(R.id.likeIcon)
 
-        if (!message.imageUrl.isNullOrEmpty()) {
-            holder.apply {
-                messageImageView.visibility = View.VISIBLE
-                messageTextView.visibility = View.GONE
+        fun bind(
+            message: Message,
+            onImageClick: (Bitmap) -> Unit,
+            onLikeClick: (String) -> Unit
+        ) {
+            senderNameTextView.text = message.senderName
 
-                if (messageImageView.tag == message.imageUrl) return
-
-                messageImageView.tag = message.imageUrl
-
-                Glide.with(itemView.context)
-                    .load(message.imageUrl)
-                    .into(messageImageView)
-
-                messageImageView.setOnClickListener { onImageClick((messageImageView.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap ?: return@setOnClickListener) }
+            when {
+                !message.imageUrl.isNullOrEmpty() -> {
+                    if (messageImageView.tag != message.imageUrl) {
+                        messageImageView.tag = message.imageUrl
+                        Glide.with(itemView.context)
+                            .load(message.imageUrl)
+                            .into(messageImageView)
+                    }
+                    messageImageView.visibility = View.VISIBLE
+                    messageTextView.visibility = View.GONE
+                    messageImageView.setOnClickListener {
+                        (messageImageView.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap?.let(onImageClick)
+                    }
+                }
+                message.text.startsWith("emoji:") -> {
+                    val emojiName = message.text.removePrefix("emoji:")
+                    val resId = itemView.context.resources.getIdentifier(emojiName, "drawable", itemView.context.packageName)
+                    if (resId != 0) {
+                        messageImageView.setImageResource(resId)
+                        messageImageView.visibility = View.VISIBLE
+                        messageTextView.visibility = View.GONE
+                        val sizeInPx = itemView.context.resources.getDimensionPixelSize(R.dimen.emoji_size)
+                        messageImageView.layoutParams = messageImageView.layoutParams.apply {
+                            width = sizeInPx
+                            height = sizeInPx
+                        }
+                    }
+                }
+                else -> {
+                    messageTextView.text = message.text
+                    messageTextView.visibility = View.VISIBLE
+                    messageImageView.visibility = View.GONE
+                }
             }
-        } else {
-            holder.apply {
-                messageTextView.visibility = View.VISIBLE
-                messageImageView.visibility = View.GONE
-                messageTextView.text = message.text
-            }
+
+            likeIcon.setImageResource(if (message.isLiked) R.drawable.ic_heart_outline else R.drawable.ic_heart_filled)
+            likeIcon.setOnClickListener { onLikeClick(message.id) }
         }
     }
 }

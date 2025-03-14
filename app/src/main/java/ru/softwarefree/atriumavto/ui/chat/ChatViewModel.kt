@@ -26,11 +26,21 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 val message = snapshot.getValue(Message::class.java)
                 message?.let {
                     messageList.add(it)
-                    _messages.value = messageList
+                    _messages.value = messageList.toList()
                 }
             }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                val updatedMessage = snapshot.getValue(Message::class.java)
+                updatedMessage?.let { newMessage ->
+                    val index = messageList.indexOfFirst { it.id == newMessage.id }
+                    if (index != -1) {
+                        messageList[index] = newMessage
+                        _messages.value = messageList.toList()
+                    }
+                }
+            }
+
             override fun onChildRemoved(snapshot: DataSnapshot) {}
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
@@ -39,14 +49,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendMessage(text: String) {
         val messageId = database.push().key ?: return
-        val user = FirebaseAuth.getInstance().currentUser
         val sharedPreferences = getApplication<Application>().getSharedPreferences("user_prefs", 0)
         val displayName = sharedPreferences.getString("displayName", "Unknown")
 
         val message = Message(
             id = messageId,
             text = text,
-            senderId = user?.uid ?: "",
+            senderId = getCurrentUserId(),
             senderName = displayName ?: "Unknown",
             timestamp = System.currentTimeMillis()
         )
@@ -55,14 +64,13 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun sendMessageWithImage(imageUrl: String) {
         val messageId = database.push().key ?: return
-        val user = FirebaseAuth.getInstance().currentUser
         val sharedPreferences = getApplication<Application>().getSharedPreferences("user_prefs", 0)
         val displayName = sharedPreferences.getString("displayName", "Unknown")
         val message = Message(
             id = messageId,
             text = "",
             imageUrl = imageUrl,
-            senderId = user?.uid ?: "",
+            senderId = getCurrentUserId(),
             senderName = displayName ?: "Unknown",
             timestamp = System.currentTimeMillis()
         )
@@ -97,7 +105,47 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         _messages.value = updatedMessages
     }
 
+    fun toggleLike(messageId: String) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) return
+
+        val messageRef = FirebaseDatabase.getInstance().reference.child("messages").child(messageId)
+
+        messageRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) return
+
+                val message = snapshot.getValue(Message::class.java) ?: return
+                val likedBy = message.likedBy?.toMutableMap() ?: mutableMapOf()
+
+                if (likedBy.containsKey(userId)) {
+                    likedBy.remove(userId)
+                } else {
+                    likedBy[userId] = true
+                }
+
+                messageRef.updateChildren(mapOf("likedBy" to likedBy))
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Логируем ошибку
+            }
+        })
+    }
+
     fun getCurrentUserId(): String {
-        return FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser
+
+        if (user == null) {
+            auth.signInAnonymously().addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    // Ошибка авторизации
+                }
+            }
+            return ""
+        }
+
+        return user.uid
     }
 }

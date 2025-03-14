@@ -11,6 +11,7 @@ import ru.softwarefree.atriumavto.R
 import ru.softwarefree.atriumavto.databinding.FragmentSetupProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import androidx.core.content.edit
 
 class SetupProfileFragment : Fragment() {
 
@@ -40,7 +41,7 @@ class SetupProfileFragment : Fragment() {
     }
 
     private fun saveDisplayName(displayName: String) {
-        sharedPreferences.edit().putString("displayName", displayName).apply()
+        sharedPreferences.edit() { putString("displayName", displayName) }
 
         val user = FirebaseAuth.getInstance().currentUser
         user?.let {
